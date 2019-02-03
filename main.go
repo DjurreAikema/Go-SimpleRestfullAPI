@@ -1,47 +1,29 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"github.com/gorilla/mux"
 )
 
-type Article struct {
-	Title   string `json:"Title"`
-	Desc    string `json:"Description"`
-	Content string `json:"Content"`
+func helloWorld(w http.ResponseWriter, req *http.Request) {
+	fmt.Fprint(w, "Hello world")
 }
 
-type Articles []Article
-
-func allArticles(w http.ResponseWriter, req *http.Request) {
-	articles := Articles{
-		{Title: "Test title", Desc: "Test description", Content: "Test content"},
-	}
-
-	fmt.Println("Endoint hit: All articles endpoint")
-	json.NewEncoder(w).Encode(articles)
-}
-
-func testPostArticles(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(w, "Endoint hit: test post endpoint")
-}
-
-func homePage(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprint(w, "Homepage endpoint hit")
-}
-
-func handleRequest() {
+func handleRequests() {
 	r := mux.NewRouter().StrictSlash(true)
 
-	r.HandleFunc("/", homePage)
-	r.HandleFunc("/articles", allArticles).Methods("GET")
-	r.HandleFunc("/articles", testPostArticles).Methods("POST")
+	r.HandleFunc("/", helloWorld).Methods("GET")
+	r.HandleFunc("/users", AllUsers).Methods("GET")
+	r.HandleFunc("/user/(name}/{email}", NewUser).Methods("POST")
+	r.HandleFunc("/user/{name}", DeleteUser).Methods("DELETE")
+	r.HandleFunc("/user/{name}/{email}", UpdateUser).Methods("PUT")
+
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
 func main() {
-	handleRequest()
+	fmt.Println("Go ORM API")
+	handleRequests()
 }
